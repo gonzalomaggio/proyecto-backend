@@ -1,0 +1,22 @@
+{
+  "name": "proyecto-backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "desafio1.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gonzalomaggio/proyecto-backend.git"
+  },
+  "author": "Gonzalo Maggio",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gonzalomaggio/proyecto-backend/issues"
+  },
+  "homepage": "https://github.com/gonzalomaggio/proyecto-backend#readme",
+  "dependencies": {
+    "moment": "^2.29.4"
+  }
+}
