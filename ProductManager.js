@@ -62,10 +62,19 @@ class ProductManager {
     return this.products;
   }
 
+  getProducts(limit) {
+    if (limit !== undefined) {
+      return this.products.slice(0, limit);
+    } else {
+      return this.products;
+    }
+  }
+
+
   getProductById(id) {
     const product = this.products.find(product => product.id === id);
     if (!product) {
-      console.log('Producto no encontrado.');
+      console.log("Producto no encontrado.");
     } else {
       return product;
     }
@@ -74,7 +83,7 @@ class ProductManager {
   updateProduct(productId, updatedFields) {
     const productIndex = this.products.findIndex(product => product.id === productId);
     if (productIndex === -1) {
-      console.log('Producto no encontrado.');
+      console.log("Producto no encontrado.");
       return;
     }
 
@@ -85,7 +94,7 @@ class ProductManager {
   deleteProduct(productId) {
     const updatedProducts = this.products.filter(product => product.id !== productId);
     if (updatedProducts.length === this.products.length) {
-      console.log('Producto no encontrado.');
+      console.log("Producto no encontrado.");
       return;
     }
 
@@ -94,7 +103,7 @@ class ProductManager {
   }
 }
 
-const manager = new ProductManager('products.json');
+const manager = new ProductManager("products.json");
 
 // Ejemplo de uso:
 manager.addProduct({
@@ -106,5 +115,16 @@ manager.addProduct({
   stock: 50,
 });
 
+manager.addProduct({
+  title: 'Remera',
+  description: 'Descripción del nuevo producto',
+  price: 3600,
+  thumbnail: 'imagen.jpg',
+  code: 'P008',
+  stock: 20,
+});
+
 const productList = manager.getProducts();
 console.log(productList);
+
+module.exports = manager;

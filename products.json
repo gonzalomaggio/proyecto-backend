@@ -7,5 +7,14 @@
     "thumbnail": "imagen.jpg",
     "code": "P005",
     "stock": 50
+  },
+  {
+    "id": 2,
+    "title": "Remera",
+    "description": "Descripción del nuevo producto",
+    "price": 3600,
+    "thumbnail": "imagen.jpg",
+    "code": "P008",
+    "stock": 20
   }
 ]
