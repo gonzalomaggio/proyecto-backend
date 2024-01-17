@@ -1,0 +1,30 @@
+[
+  {
+    "id": 1,
+    "title": "Samsung Galaxy A04",
+    "description": "Ram 4G 128 GB Pantalla led",
+    "price": 525,
+    "code": "NEW123",
+    "stock": 50,
+    "status": true,
+    "category": "Samsung",
+    "thumbnails": [
+      "url1",
+      "url2"
+    ]
+  },
+  {
+    "id": 2,
+    "title": "Xiaomi Redmi Note",
+    "description": "Ram 4G 128 GB Pantalla led",
+    "price": 525,
+    "code": "NEW124",
+    "stock": 20,
+    "status": true,
+    "category": "Xiaomi",
+    "thumbnails": [
+      "url1",
+      "url2"
+    ]
+  }
+]
