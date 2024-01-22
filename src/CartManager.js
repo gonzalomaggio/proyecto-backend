@@ -68,5 +68,5 @@ class CartManager {
 
 }
 
-const cartManager = new CartManager("carts.json");
+const cartManager = new CartManager("./src/carts.json");
 export default cartManager;

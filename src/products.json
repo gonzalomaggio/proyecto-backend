@@ -17,7 +17,7 @@
     "id": 2,
     "title": "Xiaomi Redmi Note",
     "description": "Ram 4G 128 GB Pantalla led",
-    "price": 525,
+    "price": 530,
     "code": "NEW124",
     "stock": 20,
     "status": true,
@@ -26,5 +26,9 @@
       "url1",
       "url2"
     ]
+  },
+  {
+    "title": "ZTE a40",
+    "price": "25"
   }
 ]
