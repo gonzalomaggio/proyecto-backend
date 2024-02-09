@@ -8,10 +8,7 @@
     "stock": 50,
     "status": true,
     "category": "Samsung",
-    "thumbnails": [
-      "url1",
-      "url2"
-    ]
+    "thumbnails": ["url1", "url2"]
   },
   {
     "id": 2,
@@ -22,10 +19,7 @@
     "stock": 20,
     "status": true,
     "category": "Xiaomi",
-    "thumbnails": [
-      "url1",
-      "url2"
-    ]
+    "thumbnails": ["url1", "url2"]
   },
   {
     "title": "ZTE a40",

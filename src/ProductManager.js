@@ -1,4 +1,4 @@
-import fs from "fs";
+/* import fs from "fs";
 
 class ProductManager {
   constructor(filePath) {
@@ -91,3 +91,4 @@ class ProductManager {
 
 const productManager = new ProductManager("./src/products.json");
 export default productManager;
+ */

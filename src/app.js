@@ -4,14 +4,23 @@ import { Server } from "socket.io";
 import handlebars from 'express-handlebars';
 import routerProduct from "./routes/products.router.js";
 import routerCart from "./routes/carts.router.js";
-import routerViews from "./routes/views.router.js";
+/* import routerViews from "./routes/views.router.js"; */
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
-import fs from "fs";
+/* import fs from "fs"; */
+import mongoose from "mongoose";
 
 const app = express();
 const server = http.createServer(app);
 const socketServer = new Server(server);
+mongoose.connect("mongodb+srv://gonzalomaggiofs:bahia123@ecommerce.kqcrjmj.mongodb.net/?retryWrites=true&w=majority", {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+}).then(() => {
+  console.log("MongoDB connected successfully");
+}).catch((error) => {
+  console.error("Error connecting to MongoDB:", error);
+});
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -22,16 +31,30 @@ app.set('view engine', 'handlebars');
 
 app.use(express.static(join(__dirname, '/public')));
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }))
 app.use("/api/products", routerProduct);
 app.use("/api/carts", routerCart);
-app.use('/', routerViews);
-app.use("/realtimeproducts", routerViews);
+/* app.use('/', routerViews); */
+/* app.use("/realtimeproducts", routerViews); */
+
+
+/* app.get("/", (req, res) => {
+  res.redirect("/home");
+});
+
+app.get("/home", (req, res) => {
+  res.render("home")
+}) */
 
 app.get("/ping", (req, res) => {
   res.send("pong");
 });
 
-socketServer.on('connection', (socket) => {
+/* app.use((req, res, next) => {
+  res.render("404");
+}); */
+
+/* socketServer.on('connection', (socket) => {
   console.log('A user connected');
 
   socket.on('disconnect', () => {
@@ -54,7 +77,7 @@ socketServer.on('connection', (socket) => {
 
     socketServer.emit('updateProducts', updatedProducts);
   });
-});
+}); */
 
 const PORT = process.env.PORT || 8080;
 
