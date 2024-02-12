@@ -13,10 +13,7 @@ import mongoose from "mongoose";
 const app = express();
 const server = http.createServer(app);
 const socketServer = new Server(server);
-mongoose.connect("mongodb+srv://gonzalomaggiofs:bahia123@ecommerce.kqcrjmj.mongodb.net/?retryWrites=true&w=majority", {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-}).then(() => {
+mongoose.connect("mongodb+srv://gonzalomaggiofs:bahia123@ecommerce.kqcrjmj.mongodb.net/ecommerce?retryWrites=true&w=majority",).then(() => {
   console.log("MongoDB connected successfully");
 }).catch((error) => {
   console.error("Error connecting to MongoDB:", error);
@@ -38,13 +35,13 @@ app.use("/api/carts", routerCart);
 /* app.use("/realtimeproducts", routerViews); */
 
 
-/* app.get("/", (req, res) => {
-  res.redirect("/home");
+app.get("/", (req, res) => {
+  res.redirect("home");
 });
 
 app.get("/home", (req, res) => {
   res.render("home")
-}) */
+})
 
 app.get("/ping", (req, res) => {
   res.send("pong");

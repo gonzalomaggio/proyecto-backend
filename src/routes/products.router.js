@@ -4,36 +4,50 @@ import upload from "../utils/upload.middleware.js";
 
 const routerProduct = express.Router();
 
+routerProduct.get("/admin", (req, res) => {
+  res.render("admin");
+});
+
+routerProduct.get("/new", (req, res) => {
+  res.render("new-product");
+});
+
+routerProduct.get("/update", (req, res) => {
+  res.render("update-product");
+});
+
+routerProduct.get("/delete", (req, res) => {
+  res.render("delete-product");
+});
+
 routerProduct.get("/", async (req, res) => {
   try {
     const limit = req.query.limit ? parseInt(req.query.limit) : undefined;
     const withStock = req.query.stock;
 
     let products;
-    if (withStock === undefined) {
-      products = await ProductsDAO.getAll();
-    } else {
+    if (withStock !== undefined && withStock.toLowerCase() === 'true') {
       products = await ProductsDAO.getAllWithStock();
+    } else {
+      products = await ProductsDAO.getAll();
     }
 
     if (limit !== undefined) {
       products = products.slice(0, limit);
     }
 
-    res.render("home", { products });
+    res.render("products", { products });
   } catch (error) {
     console.log(error);
     res.status(500).send("Error fetching products");
   }
 });
 
+
 routerProduct.get("/:pid", async (req, res) => {
   try {
-    const productId = parseInt(req.params.pid);
-
-    if (!productId || isNaN(productId)) {
-      return res.redirect("/products");
-    }
+    const productId = req.params.pid;
+    console.log("Product ID:", productId);
 
     const product = await ProductsDAO.getById(productId);
 
@@ -54,12 +68,9 @@ routerProduct.get("/:pid", async (req, res) => {
   }
 });
 
-routerProduct.get("/new", (req, res) => {
-  res.render("new-product");
-});
-
 routerProduct.post("/", upload.single('image'), async (req, res) => {
   try {
+    console.log("Received product data:", req.body);
     const filename = req.file.filename;
     const product = req.body;
 
@@ -70,17 +81,38 @@ routerProduct.post("/", upload.single('image'), async (req, res) => {
   }
 });
 
-routerProduct.put("/:pid", async (req, res) => {
-  const productId = parseInt(req.params.pid);
-  const updatedFields = req.body;
-  await ProductsDAO.update(productId, updatedFields);
-  res.send("Product updated successfully");
+routerProduct.put("/:pid", upload.single('image'), async (req, res) => {
+  const productId = req.params.pid;
+  const updatedData = req.body;
+
+  try {
+
+    let filename;
+    if (req.file) {
+      filename = req.file.filename;
+    } else {
+
+      const product = await ProductsDAO.getById(productId);
+      filename = product.photo;
+    }
+
+
+    const updatedProduct = await ProductsDAO.update(productId, { ...updatedData, photo: filename });
+
+
+    res.status(200).send("Producto actualizado correctamente");
+  } catch (error) {
+
+    console.error(error);
+    res.status(500).send("Error al actualizar el producto");
+  }
 });
 
 routerProduct.delete("/:pid", async (req, res) => {
-  const productId = parseInt(req.params.pid);
+  const productId = req.params.pid;
   await ProductsDAO.remove(productId);
   res.send("Product deleted successfully");
 });
 
 export default routerProduct;
+

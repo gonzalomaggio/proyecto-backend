@@ -20,9 +20,11 @@ class ProductsDAO {
 
   static async getById(id) {
     try {
+      console.log(id);
       return await Products.findOne({ _id: id }).lean();
     } catch (error) {
-      throw new Error("Error fetching product by ID");
+      console.error("Error fetching product by ID:", error);
+      return null;
     }
   }
 
@@ -31,8 +33,11 @@ class ProductsDAO {
       if (!(title && description && price && photo && stock)) {
         throw new Error("All fields are required.");
       }
-      return await new Products({ title, description, photo, price, stock }).save();
+      const newProduct = new Products({ title, description, photo, price, stock });
+      await newProduct.save();
+      return newProduct;
     } catch (error) {
+      console.log("Error adding product:", error);
       throw new Error("Error adding product");
     }
   }

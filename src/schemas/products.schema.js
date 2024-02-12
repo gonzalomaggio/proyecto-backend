@@ -19,6 +19,6 @@ const ProductsSchema = new mongoose.Schema({
   photo: {
     type: String
   }
-});
+},)
 
-export default mongoose.model("Products", ProductsSchema);
+export default mongoose.model("Products", ProductsSchema)
