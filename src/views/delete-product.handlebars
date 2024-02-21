@@ -2,21 +2,40 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-    <link rel="stylesheet" href="/css/index.css" />
+    <title>Delete Product</title>
   </head>
   <body>
-    <form action="/api/products" method="delete" enctype="multipart/form-data">
-      <input
-        type="text"
-        id="productId"
-        name="productId"
-        placeholder="Id del producto"
-        value="{{productId}}"
-        readonly
-      />
-
+    <form id="deleteForm" method="DELETE" action="/api/products">
+      <input type="text" name="pid" placeholder="Id del producto" />
       <input type="submit" value="Borrar producto" />
     </form>
+
+    <script>
+    document.getElementById('deleteForm').addEventListener('submit', async function(event) { 
+        event.preventDefault(); 
+        const formData = new FormData(event.target); 
+        const productId = formData.get('pid'); 
+        try { 
+            const response = await fetch("/api/products", { 
+                method: 'DELETE', 
+                body: formData
+                 
+            }); 
+            if (response.ok) { 
+                console.log('Producto borrado exitosamente'); 
+                const successMessage = document.createElement('p');
+            successMessage.textContent = 'Product deleted succesfully';
+            document.body.appendChild(successMessage);
+            event.target.reset();
+            } else { 
+                console.error('Error al actualizar el producto'); 
+            } 
+        } catch (error) { 
+            console.error('Error al enviar la solicitud:', error); 
+        } 
+    });
+</script>
+
+
   </body>
 </html>

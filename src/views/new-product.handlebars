@@ -8,6 +8,15 @@
   <body>
     <form action="/api/products" method="post" enctype="multipart/form-data">
       <input type="text" name="title" placeholder="Título del producto" />
+      <label for="category">Categoría del producto:</label>
+<select name="category" id="category">
+  <option value="Samsung">Samsung</option>
+  <option value="Motorola">Motorola</option>
+  <option value="Xiaomi">Xiaomi</option>
+  <option value="ZTE">ZTE</option>
+  
+</select>
+      
       <textarea
         name="description"
         id="title"

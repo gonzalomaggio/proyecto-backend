@@ -10,6 +10,7 @@ import { fileURLToPath } from 'url';
 /* import fs from "fs"; */
 import mongoose from "mongoose";
 
+
 const app = express();
 const server = http.createServer(app);
 const socketServer = new Server(server);
@@ -26,11 +27,18 @@ app.engine('handlebars', handlebars.engine());
 app.set('views', join(__dirname, '/views'));
 app.set('view engine', 'handlebars');
 
+app.use((req, res, next) => {
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.originalUrl}`);
+  next(); // Llama a next() para pasar al siguiente middleware o enrutador.
+});
 app.use(express.static(join(__dirname, '/public')));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }))
 app.use("/api/products", routerProduct);
 app.use("/api/carts", routerCart);
+
+
+
 /* app.use('/', routerViews); */
 /* app.use("/realtimeproducts", routerViews); */
 
@@ -75,6 +83,11 @@ app.get("/ping", (req, res) => {
     socketServer.emit('updateProducts', updatedProducts);
   });
 }); */
+
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send('Error interno del servidor');
+});
 
 const PORT = process.env.PORT || 8080;
 

@@ -3,8 +3,60 @@
   <li><a href="/api/products?stock=true">Ver sólo con stock</a></li>
 </ul>
 
+<form id="product-filter" action="/api/products" method="GET">
+  <label for="category">Buscar por categoría:</label>
+  <select name="category" id="category">
+    <option value="">Todas</option>
+    {{#each categories}}
+      <option value="{{this}}">{{this}}</option>
+    {{/each}}
+  </select>
+
+  <label for="sort">Ordenar por:</label>
+  <select name="sort" id="sort">
+    <option value="asc">Menor Precio</option>
+    <option value="desc">Mayor Precio</option>
+  </select>
+</form>
+
+<script>
+  
+  var form = document.getElementById('product-filter');
+  var categorySelect = document.getElementById('category');
+  var sortSelect = document.getElementById('sort');
+
+  
+  categorySelect.addEventListener('change', function() {
+    form.submit(); 
+  });
+
+  sortSelect.addEventListener('change', function() {
+    form.submit(); 
+  });
+
+  
+  var urlParams = new URLSearchParams(window.location.search);
+  var selectedCategory = urlParams.get('category');
+  var selectedSort = urlParams.get('sort');
+
+  if (selectedCategory) {
+    categorySelect.value = selectedCategory;
+  }
+
+  if (selectedSort) {
+    sortSelect.value = selectedSort;
+  }
+</script>
 <ul>
   {{#each products}}
-    <li><a href="/api/products/{{this._id}}">{{this.title}}</a></li>
+    <li><a href="/api/products/{{_id}}">{{title}}</a><b>Precio: {{price}}</b></li>
   {{/each}}
 </ul>
+
+{{#if prevLink}}
+  <a href="{{prevLink}}">Página anterior</a>
+{{/if}}
+
+{{#if nextLink}}
+  <a href="{{nextLink}}">Página siguiente</a>
+{{/if}}

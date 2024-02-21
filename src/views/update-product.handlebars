@@ -2,34 +2,43 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-    <link rel="stylesheet" href="/css/index.css" />
+    <title>Update Product</title>
   </head>
   <body>
-    <form
-      action="/api/products/{{productId}}"
-      method="put"
-      enctype="multipart/form-data"
-    >
-      <input
-        type="text"
-        id="productId"
-        name="productId"
-        placeholder="Id del producto"
-        value="{{productId}}"
-      />
+    <form id="updateForm" method="PUT" action="/api/products">
+      <input type="text" name="pid" placeholder="Id del producto" />
       <input type="text" name="title" placeholder="Título del producto" />
-      <textarea
-        name="description"
-        id="title"
-        cols="30"
-        rows="10"
-        placeholder="Descripción del producto"
-      ></textarea>
       <input type="text" name="price" placeholder="Precio del producto" />
       <input type="text" name="stock" placeholder="Stock del producto" />
       <input type="file" name="image" />
       <input type="submit" value="Actualizar producto" />
     </form>
+
+    <script>
+    document.getElementById('updateForm').addEventListener('submit', async function(event) { 
+        event.preventDefault(); 
+        const formData = new FormData(event.target); 
+        const productId = formData.get('pid'); 
+        try { 
+            const response = await fetch("/api/products", { 
+                method: 'PUT', 
+                body: formData 
+            }); 
+            if (response.ok) { 
+                console.log('Producto actualizado exitosamente'); 
+                const successMessage = document.createElement('p');
+            successMessage.textContent = 'Product updated succesfully';
+            document.body.appendChild(successMessage);
+            event.target.reset();
+            } else { 
+                console.error('Error al actualizar el producto'); 
+            } 
+        } catch (error) { 
+            console.error('Error al enviar la solicitud:', error); 
+        } 
+    });
+</script>
+
+
   </body>
 </html>

@@ -1,34 +1,45 @@
 import express from "express";
-import cartManager from "../CartManager.js";
+import CartDAO from "../daos/carts.dao.js";
+import upload from "../utils/upload.middleware.js";
 
 const routerCart = express.Router();
 
-routerCart.get("/:cid", (req, res) => {
+routerCart.get("/:cid", async (req, res) => {
   const cartId = req.params.cid;
-  const cart = cartManager.getCartById(cartId);
-  if (cart) {
-    res.json(cart);
-  } else {
+  try {
+    const cart = await CartDAO.getCartById(cartId);
+    res.render("cart", { cart: cart });
+  } catch (error) {
     res.status(404).send("Cart not found");
   }
 });
 
-routerCart.post("/", (req, res) => {
-  const cartId = req.body.id;
-  const cart = cartManager.createCart(cartId);
-  res.status(201).json(cart);
+routerCart.post("/", async (req, res) => {
+  const productId = req.body.productId;
+  const quantity = req.body.quantity || 1;
+
+  try {
+    
+    await CartDAO.addToCart(productId, quantity);
+    res.redirect("/api/carts"); 
+  } catch (error) {
+    res.status(500).send("Error adding product to cart");
+  }
 });
 
-routerCart.post("/:cid/product/:pid", (req, res) => {
+routerCart.post("/:cid/product/:pid", async (req, res) => {
   const cartId = req.params.cid;
   const productId = req.params.pid;
   const quantity = req.body.quantity || 1;
-
-  const cart = cartManager.addProductToCart(cartId, productId, quantity);
-  if (cart) {
+  try {
+    const cart = await CartDAO.addProductToCart(cartId, productId, quantity);
     res.json(cart);
-  } else {
-    res.status(404).send("Cart not found");
+  } catch (error) {
+    if (error.message === "Cart not found") {
+      res.status(404).send("Cart not found");
+    } else {
+      res.status(500).send("Error adding product to cart");
+    }
   }
 });
 

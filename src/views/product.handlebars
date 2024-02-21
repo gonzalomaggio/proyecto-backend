@@ -1,5 +1,6 @@
 <h1>{{title}}</h1>
 
+<p>{{category}}</p>
 <p>{{description}}</p>
 
 {{#if photo}}
@@ -11,3 +12,35 @@
 {{else}}
   <p>No hay stock del producto</p>
 {{/if}}
+
+<form action="/api/carts" method="post" id="add-to-cart-form">
+    <input type="hidden" name="productId" value="{{product._id}}">
+    <input type="number" name="quantity" value="1" min="1" required>
+    <button type="submit">Añadir al carrito</button>
+</form>
+
+<button id="view-cart-btn" style="display: none;">Ver Carrito</button>
+
+<script>
+  const form = document.getElementById('add-to-cart-form');
+  const viewCartBtn = document.getElementById('view-cart-btn');
+
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    const formData = new FormData(form);
+    fetch('/api/carts', {
+      method: 'POST',
+      body: formData
+    }).then(function(response) {
+      if (response.ok) {
+        viewCartBtn.style.display = 'inline'; 
+      }
+    }).catch(function(error) {
+      console.error('Error al enviar el formulario:', error);
+    });
+  });
+
+  viewCartBtn.addEventListener('click', function() {
+    window.location.href = '/api/carts';
+  });
+</script>
