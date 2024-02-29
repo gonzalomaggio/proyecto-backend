@@ -1,6 +1,5 @@
 import express from "express";
 import CartDAO from "../daos/carts.dao.js";
-import upload from "../utils/upload.middleware.js";
 
 const routerCart = express.Router();
 
@@ -15,17 +14,23 @@ routerCart.get("/:cid", async (req, res) => {
 });
 
 routerCart.post("/", async (req, res) => {
-  const productId = req.body.productId;
-  const quantity = req.body.quantity || 1;
-
   try {
-    
+    const productId = req.body.pid;
+    const quantity = req.body.quantity || 1;
+    console.log(productId)
+
+    if (!productId) {
+      throw new Error("Product ID is missing");
+    }
+
     await CartDAO.addToCart(productId, quantity);
-    res.redirect("/api/carts"); 
+    res.redirect("/api/carts");
   } catch (error) {
+    console.error("Error adding product to cart:", error);
     res.status(500).send("Error adding product to cart");
   }
 });
+
 
 routerCart.post("/:cid/product/:pid", async (req, res) => {
   const cartId = req.params.cid;

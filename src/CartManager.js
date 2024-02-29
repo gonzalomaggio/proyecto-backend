@@ -1,4 +1,4 @@
-import fs from "fs";
+/* import fs from "fs";
 
 class CartManager {
   constructor(filePath) {
@@ -70,3 +70,4 @@ class CartManager {
 
 const cartManager = new CartManager("./src/carts.json");
 export default cartManager;
+ */

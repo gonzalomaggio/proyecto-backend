@@ -21,32 +21,34 @@ class CartDAO {
 
   static async addToCart(productId, quantity) {
     try {
+      console.log("Received request to add product to cart. Product ID:", productId, "Quantity:", quantity);
+      let cart = await Cart.findOne();
 
-      const existingCartItem = await Cart.findOne({ "items.productId": productId });
-
-      if (existingCartItem) {
-
-        await Cart.findOneAndUpdate(
-          { "items.productId": productId },
-          { $inc: { "items.$.quantity": quantity } }
-        );
-      } else {
-
-        await Cart.findOneAndUpdate(
-          {},
-          { $push: { items: { productId: productId, quantity: quantity } } },
-          { upsert: true }
-        );
+      if (!cart) {
+        cart = await Cart.create({ items: [] });
       }
 
+      const existingCartItemIndex = cart.items.findIndex(item => item.productId === productId);
 
-      const updatedCart = await Cart.findOne();
-      return updatedCart;
+      if (existingCartItemIndex !== -1) {
+        cart.items[existingCartItemIndex].quantity += quantity;
+      } else {
+        cart.items.push({ productId, quantity });
+      }
+
+      cart.totalPrice = cart.items.reduce((total, item) => {
+        return total + (item.quantity * item.productId.price);
+      }, 0);
+
+      await cart.save();
+
+      console.log("Cart after adding product:", cart);
+      return cart;
     } catch (error) {
+      console.error("Error adding product to cart:", error);
       throw new Error("Error adding product to cart");
     }
   }
-
 
 }
 

@@ -21,7 +21,7 @@ class ProductsDAO {
   static async getById(id) {
     try {
       console.log(id);
-      return await Products.findOne({ _id: id }).lean();
+      return await Products.findById(id).lean(); // Corregido: Usar findById directamente
     } catch (error) {
       console.error("Error fetching product by ID:", error);
       return null;

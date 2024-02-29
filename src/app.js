@@ -4,11 +4,16 @@ import { Server } from "socket.io";
 import handlebars from 'express-handlebars';
 import routerProduct from "./routes/products.router.js";
 import routerCart from "./routes/carts.router.js";
+import UsersDAO from "./daos/users.dao.js";
+import routerSessions from "./routes/sessions.router.js" 
 /* import routerViews from "./routes/views.router.js"; */
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 /* import fs from "fs"; */
 import mongoose from "mongoose";
+import cookieParser from "cookie-parser";
+import MongoStore from "connect-mongo";
+import session from "express-session";
 
 
 const app = express();
@@ -36,6 +41,19 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }))
 app.use("/api/products", routerProduct);
 app.use("/api/carts", routerCart);
+app.use(cookieParser());
+app.use(session({
+  store: MongoStore.create({
+    mongoUrl: "mongodb+srv://gonzalomaggiofs:bahia123@ecommerce.kqcrjmj.mongodb.net/?retryWrites=true&w=majority&appName=ecommerce",
+    ttl: 15,
+  }),
+  secret: "secretCode",
+  resave: true,
+  saveUninitialized: true,
+}));
+  
+
+app.use("/api/sessions", routerSessions);
 
 
 
@@ -48,8 +66,34 @@ app.get("/", (req, res) => {
 });
 
 app.get("/home", (req, res) => {
-  res.render("home")
+
+  if (req.session.user) {
+    res.redirect("profile");
+  } else {
+    res.render("home")
+  }
 })
+  
+app.get("/register", (req, res) => {
+  res.render("register");
+});
+
+app.get("/login", (req, res) => {
+  if (req.session.user) {
+    res.redirect("/profile");
+  } else {
+    res.render("login");
+  }
+});
+
+app.get("/profile", async (req, res) => {
+  if (req.session.user) {
+    let user = await UsersDAO.getUsersById(req.session.user);
+    res.render("profile", { user });
+  } else {
+    res.redirect("/login");
+  }
+});
 
 app.get("/ping", (req, res) => {
   res.send("pong");
