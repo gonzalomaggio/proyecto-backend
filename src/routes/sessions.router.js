@@ -1,54 +1,47 @@
-import UsersDAO from "../daos/users.dao.js";
 import Router from "express";
+import passport from "passport";
+
 
 const routerSessions = Router()
 
-routerSessions.post("/register", async (req, res) => {
+routerSessions.post("/register", passport.authenticate("register", { failureRedirect:"/api/sessions/failregister"}), async (req, res) => {
   
-  let first_name = req.body.first_name;
-  let last_name = req.body.last_name;
-  let email = req.body.email;
-  let age = parseInt(req.body.age);
-  let password = req.body.password;
-
-  if (!first_name || !last_name || !email || !age || !password) {
-    res.redirect("/register");
-  }
-
-  let emailUsed = await UsersDAO.getUsersByEmail(email);
-
-  if (emailUsed) {
-    res.redirect("/register");
-  } else {
-    await UsersDAO.insert(first_name, last_name, age, email, password);
-    res.redirect("/login");
-  }
+  res.send({status:"success", message:"User registred"})
     
 });
 
-routerSessions.post("/login", async (req, res) => {
+routerSessions.get("/failregister", async(req,res)=> {
+  console.log("Failed strategy");
+  res.send({ error: "Failed" })
+});
+
+routerSessions.post("/login", passport.authenticate("login", { failureRedirect: "/api/sessions/faillogin" }), async (req, res) => {
   
-  let email = req.body.email;
-  let password = req.body.password;
-
-  if (!email || !password) {
-    res.redirect("/login");
+  if (!req.user) return res.status(400).send({ status: "error", error: "invalid credentials" })
+  req.session.user = {
+    first_name: req.user.first_name,
+    last_name: req.user.last_name,
+    age: req.user.age,
+    email: req.user.email
   }
+  res.redirect("/profile")
+});
 
-  let user = await UsersDAO.getusersByCreds(email, password);
-
-  if (!user) {
-    res.redirect("/login");
-  } else {
-    req.session.user = user._id;
-    res.redirect("/profile");
-  }
-})
+routerSessions.get("/faillogin", (req, res) => {
+  res.send({ error: "Failed login" })
+});
 
 routerSessions.get("/logout", (req, res) => {
   req.session.destroy((err) => {
     res.redirect("/home");
   })
+})
+
+routerSessions.get("/github", passport.authenticate("github", { scope: ["user:email"] }), async (req, res) => { })
+
+routerSessions.get("/githubcallback", passport.authenticate("github", { failureRedirect: "/login" }), async (req, res) => {
+  req.session.user = req.user;
+  res.redirect("/profile")
 })
 
 export default routerSessions;

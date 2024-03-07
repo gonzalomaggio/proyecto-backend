@@ -14,6 +14,9 @@ import mongoose from "mongoose";
 import cookieParser from "cookie-parser";
 import MongoStore from "connect-mongo";
 import session from "express-session";
+import passport from "passport";
+import initializePassport from "./utils/passport.config.js";
+import initializePassportGithub from "./utils/passport-github2.js";
 
 
 const app = express();
@@ -34,7 +37,7 @@ app.set('view engine', 'handlebars');
 
 app.use((req, res, next) => {
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.originalUrl}`);
-  next(); // Llama a next() para pasar al siguiente middleware o enrutador.
+  next(); 
 });
 app.use(express.static(join(__dirname, '/public')));
 app.use(express.json());
@@ -44,13 +47,22 @@ app.use("/api/carts", routerCart);
 app.use(cookieParser());
 app.use(session({
   store: MongoStore.create({
-    mongoUrl: "mongodb+srv://gonzalomaggiofs:bahia123@ecommerce.kqcrjmj.mongodb.net/?retryWrites=true&w=majority&appName=ecommerce",
+    mongoUrl: "mongodb+srv://gonzalomaggiofs:bahia123@ecommerce.kqcrjmj.mongodb.net/ecommerce?retryWrites=true&w=majority&appName=ecommerce",
     ttl: 15,
   }),
   secret: "secretCode",
   resave: true,
   saveUninitialized: true,
 }));
+
+initializePassportGithub();
+initializePassport();
+app.use(passport.initialize());
+app.use(passport.session());
+
+
+
+
   
 
 app.use("/api/sessions", routerSessions);
@@ -87,13 +99,13 @@ app.get("/login", (req, res) => {
 });
 
 app.get("/profile", async (req, res) => {
-  if (req.session.user) {
-    let user = await UsersDAO.getUsersById(req.session.user);
-    res.render("profile", { user });
+  if (req.user) {
+    res.render("profile", { user: req.user });
   } else {
     res.redirect("/login");
   }
 });
+
 
 app.get("/ping", (req, res) => {
   res.send("pong");

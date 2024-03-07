@@ -3,7 +3,11 @@ import Users from "../schemas/users.schema.js"
 class UsersDAO {
 
   static async getUsersByEmail(email) {
-    return await Users.findOne({ email });
+    if (typeof email === 'string') {
+      return await Users.findOne({ email });
+    } else {
+      return null; 
+    }
   }
 
   static async getusersByCreds(email, password) {
@@ -14,6 +18,37 @@ class UsersDAO {
   static async insert(first_name, last_name, age, email, password) {
     return await new Users({ first_name, last_name, age, email, password }).save();
   }
+
+  static async insertOne(user) {
+    // Verificar si el objeto user es válido
+    if (!user || typeof user !== 'object' || Object.keys(user).length === 0) {
+      throw new Error('Invalid user object');
+    }
+
+    // Verificar si el objeto user tiene las propiedades requeridas
+    if (!user.first_name || !user.email || !user.age) {
+      throw new Error('Invalid user properties');
+    }
+
+    // Definir valores predeterminados para last_name y password si no están presentes
+    if (!user.last_name) {
+      user.last_name = "GitHubUser";
+    }
+    if (!user.password) {
+      // Puedes generar una contraseña aleatoria o establecer un valor predeterminado
+      user.password = "GitHubUser123"; 
+    }
+
+    // Guardar el usuario en la base de datos
+    try {
+      return await new Users(user).save();
+    } catch (error) {
+      console.error('Error al guardar el usuario:', error);
+      throw error;
+    }
+  }
+
+
 
   static async getUsersById(id) {
     return await Users.findOne({ _id: id }, { first_name: 1, last_name: 1, age: 1, email: 1, }).lean();
