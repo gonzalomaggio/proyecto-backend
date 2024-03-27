@@ -11,7 +11,7 @@ class UsersDAO {
   }
 
   static async getusersByCreds(email, password) {
-    return await Users.findOne({ email, password });
+    return await Users.findOne({ email, password }, {_id:1, first_name:1, last_name:1, age:1, email:1}).lean();
 
   }
 
@@ -20,26 +20,26 @@ class UsersDAO {
   }
 
   static async insertOne(user) {
-    // Verificar si el objeto user es válido
+    
     if (!user || typeof user !== 'object' || Object.keys(user).length === 0) {
       throw new Error('Invalid user object');
     }
 
-    // Verificar si el objeto user tiene las propiedades requeridas
+    
     if (!user.first_name || !user.email || !user.age) {
       throw new Error('Invalid user properties');
     }
 
-    // Definir valores predeterminados para last_name y password si no están presentes
+    
     if (!user.last_name) {
       user.last_name = "GitHubUser";
     }
     if (!user.password) {
-      // Puedes generar una contraseña aleatoria o establecer un valor predeterminado
+      
       user.password = "GitHubUser123"; 
     }
 
-    // Guardar el usuario en la base de datos
+    
     try {
       return await new Users(user).save();
     } catch (error) {

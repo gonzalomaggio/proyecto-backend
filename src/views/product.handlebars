@@ -10,38 +10,45 @@
   <p>Precio: {{price}}</p>
   <!-- Input para la cantidad -->
   <input type="number" id="quantity" value="1" min="1" required>
+  <input type="hidden" name="productId" value="{{_id}}">
+
   <!-- Botón para agregar al carrito -->
   <button onclick="addToCart('{{_id}}')">Añadir al carrito</button>
+
 {{else}}
   <p>No hay stock del producto</p>
 {{/if}}
 
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
-  function addToCart(productId) {
-    // Obtener la cantidad del input
-    const quantity = document.getElementById('quantity').value;
+ function addToCart() {
+  // Obtener el ID del producto de la URL
+  const productId = window.location.pathname.split('/').pop();
 
-    // Crear un objeto con los datos a enviar al backend
-    const data = {
-      productId: productId,
-      quantity: quantity
-    };
+  // Obtener la cantidad del input
+  const quantity = document.getElementById('quantity').value;
 
-    // Realizar una solicitud POST al backend usando Axios
-    axios.post('/api/carts', data)
-      .then(function(response) {
-        // Verificar si la respuesta es exitosa
-        if (response.status === 200) {
-          // Redirigir al usuario a la página del carrito o realizar cualquier otra acción deseada
-          window.location.href = '/api/carts';
-        } else {
-          throw new Error('Error adding product to cart');
-        }
-      })
-      .catch(function(error) {
-        console.error('Error adding product to cart:', error);
-        // Manejar el error, mostrar un mensaje al usuario, etc.
-      });
-  }
+  // Crear un objeto con los datos a enviar al backend
+  const data = {
+    productId: productId,
+    quantity: quantity
+  };
+
+  // Realizar una solicitud POST al backend usando Axios
+  axios.post('/api/carts', data)
+    .then(function(response) {
+      // Verificar si la respuesta es exitosa
+      if (response.status === 200) {
+        // Redirigir al usuario a la página del carrito o realizar cualquier otra acción deseada
+        window.location.href = '/api/carts';
+      } else {
+        throw new Error('Error adding product to cart');
+      }
+    })
+    .catch(function(error) {
+      console.error('Error adding product to cart:', error);
+      // Manejar el error, mostrar un mensaje al usuario, etc.
+    });
+}
+
 </script>

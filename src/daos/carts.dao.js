@@ -1,4 +1,5 @@
 import Cart from "../schemas/carts.schema.js";
+import Product from "../schemas/products.schema.js"; // Importar el esquema del producto
 
 class CartDAO {
   static async getCartById(cartId) {
@@ -28,7 +29,11 @@ class CartDAO {
         cart = await Cart.create({ items: [] });
       }
 
-      const existingCartItemIndex = cart.items.findIndex(item => item.productId === productId);
+      if (!cart.items) {
+        cart.items = [];
+      }
+
+      const existingCartItemIndex = cart.items.findIndex(item => item.productId.toString() === productId.toString());
 
       if (existingCartItemIndex !== -1) {
         cart.items[existingCartItemIndex].quantity += quantity;
@@ -36,8 +41,14 @@ class CartDAO {
         cart.items.push({ productId, quantity });
       }
 
+      const product = await Product.findById(productId);
+      if (!product) {
+        throw new Error('Product not found');
+      }
+      const productPrice = product.price;
+
       cart.totalPrice = cart.items.reduce((total, item) => {
-        return total + (item.quantity * item.productId.price);
+        return total + (item.quantity * productPrice); // Usar el precio del producto
       }, 0);
 
       await cart.save();

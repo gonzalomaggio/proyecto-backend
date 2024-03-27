@@ -1,47 +1,60 @@
 import Router from "express";
 import passport from "passport";
+import jwt from "jsonwebtoken";
 
+const routerSessions = Router();
 
-const routerSessions = Router()
-
-routerSessions.post("/register", passport.authenticate("register", { failureRedirect:"/api/sessions/failregister"}), async (req, res) => {
-  
-  res.send({status:"success", message:"User registred"})
-    
+// POST route for user registration
+routerSessions.post("/register", passport.authenticate("register", { failureRedirect: "/api/sessions/failregister" }), async (req, res) => {
+  res.send({ status: "success", message: "User registered" });
 });
 
-routerSessions.get("/failregister", async(req,res)=> {
-  console.log("Failed strategy");
-  res.send({ error: "Failed" })
+// GET route for failed registration
+routerSessions.get("/failregister", async (req, res) => {
+  console.log("Failed registration strategy");
+  res.send({ error: "Failed" });
 });
 
+// POST route for user login
 routerSessions.post("/login", passport.authenticate("login", { failureRedirect: "/api/sessions/faillogin" }), async (req, res) => {
-  
-  if (!req.user) return res.status(400).send({ status: "error", error: "invalid credentials" })
-  req.session.user = {
-    first_name: req.user.first_name,
-    last_name: req.user.last_name,
-    age: req.user.age,
-    email: req.user.email
-  }
-  res.redirect("/profile")
+  if (!req.user) return res.status(400).send({ status: "error", error: "Invalid credentials" });
+
+  // Create JWT token
+  let token = jwt.sign({
+    id: req.user._id
+  }, "secret_jwt", { expiresIn: "1h" }); 
+
+  // Set JWT token in cookie
+  res.cookie("jwt", token, { httpOnly: true, secure: true, maxAge: 3600000 }); 
+  res.redirect("/profile");
 });
 
+// GET route for current user
+routerSessions.get("/current", passport.authenticate("jwt"), (req, res) => {
+  console.log(req);
+  res.send(req.user);
+});
+
+// GET route for failed login
 routerSessions.get("/faillogin", (req, res) => {
-  res.send({ error: "Failed login" })
+  res.send({ error: "Failed login" });
 });
 
+// GET route for user logout
 routerSessions.get("/logout", (req, res) => {
   req.session.destroy((err) => {
+    res.clearCookie('jwt'); 
     res.redirect("/home");
-  })
-})
+  });
+});
 
-routerSessions.get("/github", passport.authenticate("github", { scope: ["user:email"] }), async (req, res) => { })
+// GET route for GitHub authentication
+routerSessions.get("/github", passport.authenticate("github", { scope: ["user:email"] }), async (req, res) => { });
 
+// GET route for GitHub authentication callback
 routerSessions.get("/githubcallback", passport.authenticate("github", { failureRedirect: "/login" }), async (req, res) => {
   req.session.user = req.user;
-  res.redirect("/profile")
-})
+  res.redirect("/profile");
+});
 
 export default routerSessions;
